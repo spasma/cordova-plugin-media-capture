@@ -762,13 +762,17 @@
     NSString* filePath;
     int i = 1;
     do {
-        filePath = [NSString stringWithFormat:@"%@/audio_%03d.wav", docsPath, i++];
+        filePath = [NSString stringWithFormat:@"%@/audio_%03d.mp3", docsPath, i++];
     } while ([fileMgr fileExistsAtPath:filePath]);
 
     NSURL* fileURL = [NSURL fileURLWithPath:filePath isDirectory:NO];
 
     // create AVAudioPlayer
-    NSDictionary *recordSetting = [[NSMutableDictionary alloc] init];
+    NSDictionary *recordSetting = [NSDictionary dictionaryWithObjectsAndKeys:
+                                      [NSNumber numberWithInt: kAudioFormatMPEGLayer3], AVFormatIDKey,
+                                      [NSNumber numberWithFloat:44100.0], AVSampleRateKey,
+                                      [NSNumber numberWithInt: 1], AVNumberOfChannelsKey,
+                                      nil];
     self.avRecorder = [[AVAudioRecorder alloc] initWithURL:fileURL settings:recordSetting error:&err];
     if (err) {
         NSLog(@"Failed to initialize AVAudioRecorder: %@\n", [err localizedDescription]);
@@ -951,7 +955,7 @@
     if (flag) {
         NSString* filePath = [avRecorder.url path];
         // NSLog(@"filePath: %@", filePath);
-        NSDictionary* fileDict = [captureCommand getMediaDictionaryFromPath:filePath ofType:@"audio/wav"];
+        NSDictionary* fileDict = [captureCommand getMediaDictionaryFromPath:filePath ofType:@"audio/mpeg"];
         NSArray* fileArray = [NSArray arrayWithObject:fileDict];
 
         self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:fileArray];
