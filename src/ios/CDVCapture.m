@@ -673,7 +673,7 @@
         microphoneResource = @"CDVCapture.bundle/microphone-568h";
     }
 
-    NSBundle* cdvBundle = [NSBundle bundleForClass:[CDVCapture class]];
+    NSBundle* cdvBundle = [NSBundle mainBundle];
     UIImage* microphone = [UIImage imageNamed:[self resolveImageResource:microphoneResource] inBundle:cdvBundle compatibleWithTraitCollection:nil];
     UIView* microphoneView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, viewRect.size.width, microphone.size.height)];
     [microphoneView setBackgroundColor:[UIColor colorWithPatternImage:microphone]];
@@ -762,16 +762,16 @@
     NSString* filePath;
     int i = 1;
     do {
-        filePath = [NSString stringWithFormat:@"%@/audio_%03d.mp3", docsPath, i++];
+        filePath = [NSString stringWithFormat:@"%@/audio_%03d.m4a", docsPath, i++];
     } while ([fileMgr fileExistsAtPath:filePath]);
 
     NSURL* fileURL = [NSURL fileURLWithPath:filePath isDirectory:NO];
 
     // create AVAudioPlayer
     NSDictionary *recordSetting = [NSDictionary dictionaryWithObjectsAndKeys:
-                                      [NSNumber numberWithInt: kAudioFormatMPEGLayer3], AVFormatIDKey,
-                                      [NSNumber numberWithFloat:44100.0], AVSampleRateKey,
-                                      [NSNumber numberWithInt: 1], AVNumberOfChannelsKey,
+                                    [NSNumber numberWithInt: kAudioFormatMPEG4AAC], AVFormatIDKey,
+                                    [NSNumber numberWithFloat:32000.0], AVSampleRateKey, // 8000, 11025, 22050, 32000, 44100, 48000
+                                    [NSNumber numberWithInt: 1], AVNumberOfChannelsKey,
                                       nil];
     self.avRecorder = [[AVAudioRecorder alloc] initWithURL:fileURL settings:recordSetting error:&err];
     if (err) {
@@ -955,7 +955,7 @@
     if (flag) {
         NSString* filePath = [avRecorder.url path];
         // NSLog(@"filePath: %@", filePath);
-        NSDictionary* fileDict = [captureCommand getMediaDictionaryFromPath:filePath ofType:@"audio/mpeg"];
+        NSDictionary* fileDict = [captureCommand getMediaDictionaryFromPath:filePath ofType:@"audio/mp4"];
         NSArray* fileArray = [NSArray arrayWithObject:fileDict];
 
         self.pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:fileArray];
